@@ -1,3 +1,4 @@
+
 const { selectCategories, selectReviews, getReviewsVotes,
 selectReviewById } = require('../models/games_models.js');
 
@@ -38,4 +39,5 @@ exports.getReviewById = (req, res, next) => {
     .catch((err) => {
         next(err);
     })
+
 };

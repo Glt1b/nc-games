@@ -6,6 +6,7 @@ exports.selectCategories = () => {
         return result.rows;
         
     })
+
 };
 
 exports.selectReviews = () => {
@@ -32,5 +33,8 @@ exports.selectReviewById = (review_id) => {
         }
         })
        
+};
+
+
 };
 
