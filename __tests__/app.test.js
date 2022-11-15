@@ -72,41 +72,42 @@ describe('GET/api/categories', () => {
   });
 
   
-describe('GET/api/review/:review_id', () => {
-  test('200 - responds with an object of review', () => {
-    return request(app)
-      .get('/api/reviews/2')
-      .expect(200)
-      .then((res) => {
+  describe('GET/api/review/:review_id/comments', () => {
+    test('200 - responds with an array of comments objects', () => {
+      return request(app)
+        .get('/api/reviews/2/comments')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments).toBeInstanceOf(Array);
+          expect(res.body.comments.length).toBeGreaterThan(0);
+          res.body.comments.forEach((comment) => {
+            expect(comment).toMatchObject({
+              body: expect.any(String),
+              votes: expect.any(Number),
+              author: expect.any(String),
+              review_id: expect.any(Number),
+              created_at: expect.any(String)
+              })
+          });
+        });
+    });
   
-        expect(res.body.review).toMatchObject({
-          title: expect.any(String),
-          designer: expect.any(String),
-          owner: expect.any(String),
-          review_body: expect.any(String),
-          created_at: expect.any(String),
-          votes: expect.any(Number)
-          })
-      });
+    test('400 - Bad request when pass invalid id format', () => {
+      return request(app)
+        .get('/api/reviews/lalala/comments')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Bad Request');
+        });
+    });
+  
+  
+    test('404 - review id not found', () => {
+      return request(app)
+        .get('/api/reviews/0/comments')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Thers is no comment for review id: 0');
+        });
+    });
   });
-
-  test('400 - Bad request when pass invalid id format', () => {
-    return request(app)
-      .get('/api/reviews/lalala')
-      .expect(400)
-      .then((res) => {
-        expect(res.body.msg).toEqual('Bad Request');
-      });
-  });
-
-
-  test('404 - id not found', () => {
-    return request(app)
-      .get('/api/reviews/0')
-      .expect(404)
-      .then((res) => {
-        expect(res.body.msg).toEqual('review does not exist for id: 0');
-      });
-  });
-});
-
