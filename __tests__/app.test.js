@@ -44,7 +44,7 @@ describe('GET/api/categories', () => {
   });
   
 
-  describe('GET/api/reviews', () => {
+describe('GET/api/reviews', () => {
     test('200 - responds with an array of reviews objects', () => {
       return request(app)
         .get('/api/reviews')
@@ -81,14 +81,23 @@ describe('GET/api/categories', () => {
           expect(res.body.comments).toBeInstanceOf(Array);
           expect(res.body.comments.length).toBeGreaterThan(0);
           res.body.comments.forEach((comment) => {
+            expect(comment.review_id).toBe(2)
             expect(comment).toMatchObject({
               body: expect.any(String),
               votes: expect.any(Number),
               author: expect.any(String),
-              review_id: expect.any(Number),
               created_at: expect.any(String)
               })
           });
+        });
+    });
+
+    test('200 - return a message when review id exists but there are no comments', () => {
+      return request(app)
+        .get('/api/reviews/1/comments')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.comments).toEqual([])
         });
     });
   
@@ -107,7 +116,7 @@ describe('GET/api/categories', () => {
         .get('/api/reviews/0/comments')
         .expect(404)
         .then((res) => {
-          expect(res.body.msg).toEqual('Thers is no comment for review id: 0');
+          expect(res.body.msg).toEqual('Thers is no review id: 0');
         });
     });
   });
