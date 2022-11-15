@@ -23,18 +23,26 @@ exports.getReviewsVotes = () => {
         })
 };
 
-exports.selectReviewById = (review_id) => {
-    return db.query(`
-        SELECT * FROM reviews WHERE review_id = $1;`, [review_id]).then((result) => {
-            if (result.rows.length === 0) {
-               return Promise.reject({status: 404, msg: `review does not exist for id: ${review_id}`})
-            } else {
-               return result.rows[0];
+exports.selectCommentsByReviewId = (review_id) => {
+    const commentQuery = db.query(
+        `SELECT * FROM comments
+        WHERE review_id = $1
+        ORDER BY created_at ASC;`, [review_id])
+
+    const reviewQuery = db.query(`SELECT * FROM reviews 
+                             WHERE review_id = $1;`, [review_id])
+
+    return Promise.all([commentQuery, reviewQuery]).then((results) => {
+        const comments = results[0].rows;
+        const reviews = results[1].rows;
+
+        if(reviews.length === 0) {
+            return Promise.reject({status: 404, msg: `Thers is no review id: ${review_id}`})
+        } else {
+            return comments;
         }
-        })
-       
+    })
 };
 
 
-};
 
