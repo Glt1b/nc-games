@@ -120,3 +120,58 @@ describe('GET/api/reviews', () => {
         });
     });
   });
+
+  describe('PATCH api/review/:review_id', () => {
+    test('201 - responds with an object of updated review when pass valid update object', () => {
+      const update = {inc_votes: 5}
+      return request(app)
+        .patch('/api/reviews/2')
+        .send(update)
+        .expect(201)
+        .then((res) => {
+          expect(res.body.review.votes).toEqual(10)
+          expect(res.body.review).toMatchObject({
+            created_at: expect.any(String),
+            category: expect.any(String),
+            review_body: expect.any(String),
+            review_img_url: expect.any(String),
+            owner: expect.any(String),
+            designer: expect.any(String)
+            })
+        });
+    });
+  
+    test('404 - review id not found', () => {
+      const update = {inc_votes: 5}
+      return request(app)
+        .patch('/api/reviews/0')
+        .send(update)
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toEqual('review does not exist for id: 0');
+        });
+    });
+  
+  
+    test('400 - Bad request when pass invalid id format', () => {
+      const update = {inc_votes: 5}
+      return request(app)
+        .patch('/api/reviews/lalala')
+        .send(update)
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Bad Request');
+        });
+    });
+  
+    test('400 - Bad request when pass invalid comment object', () => {
+      const update = {}
+      return request(app)
+        .patch('/api/reviews/2')
+        .send(update)
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Bad Request');
+        });
+    });
+  });

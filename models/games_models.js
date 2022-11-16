@@ -44,5 +44,33 @@ exports.selectCommentsByReviewId = (review_id) => {
     })
 };
 
+exports.setReview= (review_id, body) => {
+    if(!body.inc_votes) {
+        return Promise.reject({status: 400, msg: 'Bad Request'})
+    } else {
+        return db.query(`
+    SELECT * FROM reviews WHERE review_id = $1;`, [review_id])
+     .then((result) => {
+        if (result.rows.length === 0){
+            return Promise.reject({status: 404, msg: `review does not exist for id: ${review_id}`});
+        } else {
+            return db.query(`
+            SELECT votes FROM reviews 
+            WHERE review_id = $1;`, [review_id]).then((result) => {
+                const newVotes = result.rows[0].votes + body.inc_votes
+                
+                return db.query(`
+                UPDATE reviews
+                SET votes = $1
+                WHERE review_id = $2
+                RETURNING *;`, [newVotes, review_id])
+            }).then((result) => {
+                console.log(result.rows[0])
+                return result.rows[0];
+            })
+            
+        }
+});
+}};
 
 
