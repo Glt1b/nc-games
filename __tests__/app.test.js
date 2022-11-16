@@ -44,7 +44,7 @@ describe('GET/api/categories', () => {
   });
   
 
-  describe('GET/api/reviews', () => {
+describe('GET/api/reviews', () => {
     test('200 - responds with an array of reviews objects', () => {
       return request(app)
         .get('/api/reviews')
@@ -109,4 +109,61 @@ describe('GET/api/review/:review_id', () => {
       });
   });
 });
+
+ 
+describe('POST api/review/:review_id/comments', () => {
+  test('201 - responds with an object of comment when pass valid comment', () => {
+    const comment = {username: 'mallionaire', body: 'That is great!'}
+    return request(app)
+      .post('/api/reviews/2/comments')
+      .send(comment)
+      .expect(201)
+      .then((res) => {
+        expect(res.body.comment.body).toEqual('That is great!')
+        expect(res.body.comment.author).toEqual('mallionaire')
+        expect(res.body.comment).toMatchObject({
+          votes: expect.any(Number),
+          created_at: expect.any(String)
+          })
+      });
+  });
+
+  test('404 - review id not found', () => {
+    const comment = {username: 'mallionaire', body: 'That is great!'}
+    return request(app)
+      .post('/api/reviews/0/comments')
+      .send(comment)
+      .expect(404)
+      .then((res) => {
+        expect(res.body.msg).toEqual('review does not exist for id: 0');
+      });
+  });
+
+
+  test('400 - Bad request when pass invalid id format', () => {
+    const comment = {username: 'mallionaire', body: 'That is great!'}
+    return request(app)
+      .post('/api/reviews/lalala/comments')
+      .send(comment)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toEqual('Bad Request');
+      });
+  });
+
+  test('400 - Bad request when pass invalid comment object', () => {
+    const comment = {body: 'That is great!'}
+    return request(app)
+      .post('/api/reviews/2/comments')
+      .send(comment)
+      .expect(400)
+      .then((res) => {
+        expect(res.body.msg).toEqual('Bad Request');
+      });
+  });
+});
+
+
+
+
 
