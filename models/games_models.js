@@ -2,9 +2,7 @@ const db  = require("../db/connection.js");
 
 exports.selectCategories = () => {
     return db.query('SELECT * FROM categories;').then((result) => {
-        
         return result.rows;
-        
     })
 
 };
@@ -68,12 +66,15 @@ exports.insertComment = (review_id, body) => {
     VALUES 
     ($1, $2, $3)
     RETURNING *;`, [body.username, body.body, review_id]).then((result) => {
-
-        console.log(result.rows[0])
         return result.rows[0];
     })
         }
-}
+};
 
+exports.selectUsers = () => {
+    return db.query('SELECT * FROM users;').then((result) => {
+        return result.rows;
+    })
+}
 
 

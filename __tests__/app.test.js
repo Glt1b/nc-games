@@ -178,5 +178,3 @@ test('400 - Bad request when username does not exist', () => {
 
 
 
-
-
