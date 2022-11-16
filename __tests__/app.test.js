@@ -128,14 +128,14 @@ describe('POST api/review/:review_id/comments', () => {
       });
   });
 
-  test('404 - review id not found', () => {
+  test('400 - bad request, review_id does not exist', () => {
     const comment = {username: 'mallionaire', body: 'That is great!'}
     return request(app)
       .post('/api/reviews/0/comments')
       .send(comment)
-      .expect(404)
+      .expect(400)
       .then((res) => {
-        expect(res.body.msg).toEqual('review does not exist for id: 0');
+        expect(res.body.msg).toEqual('Bad Request');
       });
   });
 
@@ -162,6 +162,19 @@ describe('POST api/review/:review_id/comments', () => {
       });
   });
 });
+
+test('400 - Bad request when username does not exist', () => {
+  const comment = {username: 'Marcin', body: 'That is great!'}
+  return request(app)
+    .post('/api/reviews/2/comments')
+    .send(comment)
+    .expect(400)
+    .then((res) => {
+      expect(res.body.msg).toEqual('Bad Request');
+    });
+
+});
+
 
 
 
