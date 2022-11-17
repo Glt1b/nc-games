@@ -122,6 +122,7 @@ describe('GET/api/reviews', () => {
   });
 
 
+
   describe('GET/api/review/:review_id', () => {
     test('200 - responds with an object of review', () => {
       return request(app)
@@ -242,7 +243,6 @@ test('404 - Bad request when username does not exist', () => {
             review_img_url: expect.any(String),
             owner: expect.any(String),
             designer: expect.any(String)
-
             })
         });
     });
@@ -270,7 +270,7 @@ test('404 - Bad request when username does not exist', () => {
           expect(res.body.msg).toEqual('Bad Request');
         });
     });
-  
+
   
     test('404 - id not found', () => {
       return request(app)
@@ -282,6 +282,7 @@ test('404 - Bad request when username does not exist', () => {
     });
   
   
+
 
     test('400 - Bad request when pass invalid comment object', () => {
       const update = {}
@@ -295,5 +296,4 @@ test('404 - Bad request when username does not exist', () => {
         });
     });
   });
-
 
