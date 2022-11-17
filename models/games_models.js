@@ -87,17 +87,6 @@ exports.insertComment = (review_id, body) => {
 };
 
 
-    } else {
-            return db.query(`
-    INSERT INTO comments 
-    (author, body, review_id) 
-    VALUES 
-    ($1, $2, $3)
-    RETURNING *;`, [body.username, body.body, review_id]).then((result) => {
-        return result.rows[0];
-    })
-        }
-};
 
 exports.setReview= (review_id, body) => {
     if(!body.inc_votes || body.inc_votes === NaN) {
