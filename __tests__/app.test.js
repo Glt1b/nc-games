@@ -133,9 +133,9 @@ describe('POST api/review/:review_id/comments', () => {
     return request(app)
       .post('/api/reviews/0/comments')
       .send(comment)
-      .expect(400)
+      .expect(404)
       .then((res) => {
-        expect(res.body.msg).toEqual('Bad Request');
+        expect(res.body.msg).toEqual('Review id 0 does not exists');
       });
   });
 
@@ -163,14 +163,14 @@ describe('POST api/review/:review_id/comments', () => {
   });
 });
 
-test('400 - Bad request when username does not exist', () => {
+test('404 - Bad request when username does not exist', () => {
   const comment = {username: 'Marcin', body: 'That is great!'}
   return request(app)
     .post('/api/reviews/2/comments')
     .send(comment)
     .expect(400)
     .then((res) => {
-      expect(res.body.msg).toEqual('Bad Request');
+      expect(res.body.msg).toEqual('User Marcin does not exists');
     });
 
 });

@@ -59,22 +59,30 @@ exports.insertComment = (review_id, body) => {
 
     if(!body.username || !body.body) {
         return Promise.reject({status: 400, msg: 'Bad Request'})
-    } else {
+    };
+
+    const userQuery = db.query(`SELECT * FROM users WHERE username = $1;`, [body.username]);
+    const reviewQuery = db.query(`SELECT * FROM reviews WHERE review_id = $1;`, [review_id]);
+
+    return Promise.all([userQuery, reviewQuery]).then((results) => {
+        const user = results[0].rows;
+        const review = results[1].rows;
+
+        if (user.length === 0){
+            return Promise.reject({status: 400, msg: `User ${body.username} does not exists`});
+        } else if (review.length === 0) {
+            return Promise.reject({status: 404, msg: `Review id ${review_id} does not exists`});
+        } else {
             return db.query(`
-    INSERT INTO comments 
-    (author, body, review_id) 
-    VALUES 
-    ($1, $2, $3)
-    RETURNING *;`, [body.username, body.body, review_id]).then((result) => {
+            INSERT INTO comments 
+            (author, body, review_id) 
+            VALUES 
+            ($1, $2, $3)
+            RETURNING *;`, [body.username, body.body, review_id]).then((result) => {
         return result.rows[0];
     })
         }
-};
-
-exports.selectUsers = () => {
-    return db.query('SELECT * FROM users;').then((result) => {
-        return result.rows;
     })
-}
+};
 
 
