@@ -23,6 +23,18 @@ exports.getReviewsVotes = () => {
         })
 };
 
+exports.selectReviewById = (review_id) => {
+    return db.query(`
+        SELECT * FROM reviews WHERE review_id = $1;`, [review_id]).then((result) => {
+            if (result.rows.length === 0) {
+               return Promise.reject({status: 404, msg: `review does not exist for id: ${review_id}`})
+            } else {
+               return result.rows[0];
+        }
+        })
+       
+};
+
 exports.selectCommentsByReviewId = (review_id) => {
     const commentQuery = db.query(
         `SELECT * FROM comments

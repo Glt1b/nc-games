@@ -33,7 +33,17 @@ exports.getReviews = (req, res) => {
 };
 
 exports.getReviewById = (req, res, next) => {
-    selectReviewById(req.params.review_id).then((result) => {
+    const reviewQuery = selectReviewById(req.params.review_id);
+    const commentQuery = getReviewsVotes();
+
+    return Promise.all([reviewQuery, commentQuery])
+    .then((results) => {
+
+        console.log(reviewQuery)
+        console.log(commentQuery)
+        const comment_count = result.filter((item) => item.review_id === review.review_id).length;
+        review['comment_count'] = comment_count;
+        
         res.status(200).send({review: result})
     })
     .catch((err) => {
