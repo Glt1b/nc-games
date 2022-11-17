@@ -45,4 +45,8 @@ exports.selectCommentsByReviewId = (review_id) => {
 };
 
 
-
+exports.selectUsers = () => {
+    return db.query('SELECT * FROM users;').then((result) => {
+        return result.rows;
+    })
+}
