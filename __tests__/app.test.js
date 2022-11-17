@@ -121,6 +121,25 @@ describe('GET/api/reviews', () => {
     });
   });
 
+
+
+  describe('GET/api/users', () => {
+    test('200 - responds with an array of user objects', () => {
+      return request(app)
+        .get('/api/users')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.users).toBeInstanceOf(Array);
+          expect(res.body.users.length).toBeGreaterThan(0);
+          res.body.users.forEach((user) => {
+            expect(user).toMatchObject({
+                username: expect.any(String),
+                name: expect.any(String),
+                avatar_url: expect.any(String)
+              })
+          });
+
+
  
 describe('POST api/review/:review_id/comments', () => {
   test('201 - responds with an object of comment when pass valid comment', () => {
@@ -188,8 +207,6 @@ test('404 - Bad request when username does not exist', () => {
 
 
 
-
-=======
   describe('PATCH api/review/:review_id', () => {
     test('201 - responds with an object of updated review when pass valid update object', () => {
       const update = {inc_votes: 5}
@@ -241,6 +258,7 @@ test('404 - Bad request when username does not exist', () => {
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toEqual('Bad Request');
+
         });
     });
   });

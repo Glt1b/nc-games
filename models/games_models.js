@@ -129,4 +129,8 @@ exports.setReview= (review_id, body) => {
 });
 }};
 
-
+exports.selectUsers = () => {
+    return db.query('SELECT * FROM users;').then((result) => {
+        return result.rows;
+    })
+}
