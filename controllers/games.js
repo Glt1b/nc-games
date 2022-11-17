@@ -1,6 +1,11 @@
 
 const { selectCategories, selectReviews, getReviewsVotes,
-selectReviewById, selectCommentsByReviewId } = require('../models/games_models.js');
+
+
+selectReviewById, selectCommentsByReviewId, selectUsers, setReview, insertComment  } = require('../models/games_models.js');
+
+
+
 
 exports.getCategories = (req, res) => {
     selectCategories().then((result) => {
