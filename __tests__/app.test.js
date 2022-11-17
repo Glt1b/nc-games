@@ -122,6 +122,21 @@ describe('GET/api/reviews', () => {
   });
 
 
+  describe('GET/api/review/:review_id', () => {
+    test('200 - responds with an object of review', () => {
+      return request(app)
+        .get('/api/reviews/2')
+        .expect(200)
+        .then((res) => {
+          expect(res.body.review).toMatchObject({
+            title: expect.any(String),
+            designer: expect.any(String),
+            owner: expect.any(String),
+            review_body: expect.any(String),
+            created_at: expect.any(String),
+            votes: expect.any(Number)
+
+
 
   describe('GET/api/users', () => {
     test('200 - responds with an array of user objects', () => {
@@ -225,10 +240,16 @@ test('404 - Bad request when username does not exist', () => {
             review_img_url: expect.any(String),
             owner: expect.any(String),
             designer: expect.any(String)
+
             })
         });
     });
   
+
+    test('400 - Bad request when pass invalid id format', () => {
+      return request(app)
+        .get('/api/reviews/lalala')
+
     test('404 - review id not found', () => {
       const update = {inc_votes: 5}
       return request(app)
@@ -252,6 +273,18 @@ test('404 - Bad request when username does not exist', () => {
         });
     });
   
+  
+    test('404 - id not found', () => {
+      return request(app)
+        .get('/api/reviews/0')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toEqual('review does not exist for id: 0');
+        });
+    });
+  });
+  
+
     test('400 - Bad request when pass invalid comment object', () => {
       const update = {}
       return request(app)
@@ -264,4 +297,5 @@ test('404 - Bad request when username does not exist', () => {
         });
     });
   });
+
 
