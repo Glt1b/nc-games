@@ -138,7 +138,9 @@ describe('GET/api/reviews', () => {
                 avatar_url: expect.any(String)
               })
           });
-
+        })
+      })
+    })
 
  
 describe('POST api/review/:review_id/comments', () => {
