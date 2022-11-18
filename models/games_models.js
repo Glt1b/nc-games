@@ -7,11 +7,37 @@ exports.selectCategories = () => {
 
 };
 
-exports.selectReviews = () => {
-    return db.query(`
-       SELECT * FROM reviews ORDER BY created_at DESC;`).then((result) => {
+exports.selectReviews = (sort_by , category, order) => {
+    const validSort = ['title', 'designer', 'owner', 'category', 'created_at', 'votes'];
+    
+    if(!validSort.includes(sort_by)){
+        return Promise.reject({status: 400, msg: 'Bad Request'});
+    }
+    if (order === 'ASC' || order === 'DESC'){
+
+    let queryStr = `SELECT * FROM reviews `;
+    const queryValues = [];
+
+    if(category !== null){
+        queryStr += `WHERE category = $1 ORDER BY ${sort_by} ${order};`;
+        queryValues.push(category.replaceAll('_', ' '));
+        
+    } else {
+        queryStr += `ORDER BY ${sort_by} ${order};`;
+        
+    }
+
+    return db.query(queryStr, queryValues).then((result) => {
+        if(result.rows.length === 0){
+            return Promise.reject({status: 400, msg: `category ${category} does not exists`})
+        }
         return result.rows;
     })
+} else {
+
+    return Promise.reject({status: 400, msg: 'invalid order query'})
+
+}
 };
 
 exports.getReviewsVotes = () => {
@@ -123,3 +149,16 @@ exports.selectUsers = () => {
         return result.rows;
     })
 }
+
+exports.deleteComment = (comment_id) => {
+    return db.query(`
+    DELETE FROM comments WHERE comment_id = $1 RETURNING *;`, [comment_id]).then((result) => {
+        if(result.rows.length === 0){
+        return Promise.reject({status: 404, msg: `comment does not exists for id: ${comment_id}`});
+    } else {
+        return result;
+    }
+    })
+}
+    
+

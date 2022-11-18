@@ -69,6 +69,109 @@ describe('GET/api/reviews', () => {
           });
         });
     });
+
+    test('200 - responds with an array of reviews objects with ascending order', () => {
+      return request(app)
+        .get('/api/reviews/?order=ASC')
+        .expect(200)
+        .then((res) => {
+          
+          expect(res.body.reviews).toBeInstanceOf(Array);
+          expect(res.body.reviews.length).toBeGreaterThan(0);
+          res.body.reviews.forEach((review) => {
+            expect(review).toMatchObject({
+                title: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number)
+              })
+          });
+          expect(res.body.reviews).toBeSortedBy('created_at', {
+            ascending: true
+          });
+        });
+    });
+
+    test('200 - responds with an array of reviews objects of one category', () => {
+      return request(app)
+        .get('/api/reviews?category=dexterity')
+        .expect(200)
+        .then((res) => {
+          
+          expect(res.body.reviews).toBeInstanceOf(Array);
+          expect(res.body.reviews.length).toBeGreaterThan(0);
+          res.body.reviews.forEach((review) => {
+            expect(review.category).toEqual('dexterity')
+            expect(review).toMatchObject({
+                title: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number)
+              })
+          });
+          expect(res.body.reviews).toBeSortedBy('created_at', {
+            descending: true
+          });
+        });
+    });
+
+    test('200 - responds with an array of reviews objects of one category', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=owner')
+        .expect(200)
+        .then((res) => {
+          
+          expect(res.body.reviews).toBeInstanceOf(Array);
+          expect(res.body.reviews.length).toBeGreaterThan(0);
+          res.body.reviews.forEach((review) => {
+            expect(review).toMatchObject({
+                title: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number)
+              })
+          });
+          expect(res.body.reviews).toBeSortedBy('owner', {
+            descending: true
+          });
+        });
+    });
+    test('400 - Bad request when pass invalid query', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=lalala')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Bad Request');
+        });
+    });
+
+    test('400 - Bad request when pass invalid category', () => {
+      return request(app)
+        .get('/api/reviews?category=lalala')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('category lalala does not exists');
+        });
+    });
+
+    test('400 - Bad request when pass invalid order query', () => {
+      return request(app)
+        .get('/api/reviews?order=x')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('invalid order query');
+        });
+    });
+
   });
 
   
@@ -296,4 +399,45 @@ test('404 - Bad request when username does not exist', () => {
         });
     });
   });
+
+describe('DELETE api/comments/:comment_id', () => {
+    test('204 - delete comment with specyfied id', () => {
+      return request(app)
+        .delete('/api/comments/4')
+        .expect(204)
+    });
+
+    test('404 - comment id not found', () => {
+      return request(app)
+        .delete('/api/comments/0')
+        .expect(404)
+        .then((res) => {
+          expect(res.body.msg).toEqual('comment does not exists for id: 0');
+        });
+    });
+
+    test('400 - Bad request when pass invalid comment id', () => {
+      return request(app)
+        .delete('/api/comments/op')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('Bad Request');
+
+        });
+    });
+})
+  
+
+
+describe('GET/api', () => {
+  test('200 - responds with a endpoints json object', () => {
+    return request(app)
+      .get('/api')
+      .expect(200)
+      .then((res) => {
+        expect(JSON.parse(res.body.api)).toBeInstanceOf(Object);
+      });
+  });
+});
+
 
