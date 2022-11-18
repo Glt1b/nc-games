@@ -1,7 +1,9 @@
 
 const { selectCategories, selectReviews, getReviewsVotes,
 selectReviewById, selectCommentsByReviewId, selectUsers, setReview, 
-insertComment  } = require('../models/games_models.js');
+insertComment, deleteComment  } = require('../models/games_models.js');
+
+const { readFile } = require('fs/promises');
 
 
 exports.getCategories = (req, res) => {
@@ -10,10 +12,29 @@ exports.getCategories = (req, res) => {
     })
 };
 
-exports.getReviews = (req, res) => {
+exports.getReviews = (req, res, next) => {
     let reviews = [];
     let count = 0;
-    selectReviews()
+
+    let category = null;
+    let sort_by = 'created_at';
+    let order = 'DESC';
+    
+    if(req.query.category){
+        category = req.query.category
+    };
+
+    if(req.query.sort_by){
+        sort_by = req.query.sort_by
+    };
+    
+    if(req.query.order){
+       if(req.query.order === 'ASC'){
+        order = 'ASC' 
+    };
+    };
+
+    selectReviews(sort_by, category, order)
     .then((result) => {
         reviews = result;
     }).then(() => {
@@ -28,9 +49,10 @@ exports.getReviews = (req, res) => {
                     res.status(200).send({reviews: reviews})
                 }
             }
-            
-
         })
+    })
+    .catch((err) => {
+        next(err);
     })
 };
 
@@ -72,6 +94,25 @@ exports.updateReview = (req, res, next) => {
 exports.postComment = (req, res, next) => {
     insertComment(req.params.review_id, req.body).then((result) => {
         res.status(201).send({comment: result})
+    })
+    .catch((err) => {
+        next(err);
+    })
+};
+
+exports.deleteCommentById = (req, res, next) => {
+    deleteComment(req.params.comment_id).then((result) => {
+        if(result){
+        res.status(204).send()
+}})
+    .catch((err) => {
+        next(err);
+    })
+};
+
+exports.getApi = (req, res, next) => {
+    readFile('./endpoints.json', 'utf-8').then((result) => {
+        res.status(200).send({api: result})
     })
     .catch((err) => {
         next(err);
