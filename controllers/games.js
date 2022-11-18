@@ -29,9 +29,7 @@ exports.getReviews = (req, res, next) => {
     };
     
     if(req.query.order){
-       if(req.query.order === 'ASC'){
-        order = 'ASC' 
-    };
+       order = req.query.order
     };
 
     selectReviews(sort_by, category, order)

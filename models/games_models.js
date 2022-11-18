@@ -7,27 +7,24 @@ exports.selectCategories = () => {
 
 };
 
-exports.selectReviews = (sort_by , category, sort) => {
+exports.selectReviews = (sort_by , category, order) => {
     const validSort = ['title', 'designer', 'owner', 'category', 'created_at', 'votes'];
     
     if(!validSort.includes(sort_by)){
         return Promise.reject({status: 400, msg: 'Bad Request'});
     }
+    if (order === 'ASC' || order === 'DESC'){
 
     let queryStr = `SELECT * FROM reviews `;
     const queryValues = [];
 
     if(category !== null){
-        queryStr += `WHERE category = $1 ORDER BY ${sort_by} `;
+        queryStr += `WHERE category = $1 ORDER BY ${sort_by} ${order};`;
         queryValues.push(category.replaceAll('_', ' '));
-        if(sort === 'DESC'){
-            queryStr += `DESC;`
-        } else {queryStr += `ASC;`}
+        
     } else {
-        queryStr += `ORDER BY ${sort_by} `;
-        if(sort === 'DESC'){
-            queryStr += `DESC;`
-        } else {queryStr += `ASC;`}
+        queryStr += `ORDER BY ${sort_by} ${order};`;
+        
     }
 
     return db.query(queryStr, queryValues).then((result) => {
@@ -36,6 +33,11 @@ exports.selectReviews = (sort_by , category, sort) => {
         }
         return result.rows;
     })
+} else {
+
+    return Promise.reject({status: 400, msg: 'invalid order query'})
+
+}
 };
 
 exports.getReviewsVotes = () => {

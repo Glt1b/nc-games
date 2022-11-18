@@ -95,9 +95,35 @@ describe('GET/api/reviews', () => {
         });
     });
 
-    test('200 - responds with an array of reviews objects of one category and sort_by provided', () => {
+    test('200 - responds with an array of reviews objects of one category', () => {
       return request(app)
-        .get('/api/reviews?category=dexterity&sort_by=title')
+        .get('/api/reviews?category=dexterity')
+        .expect(200)
+        .then((res) => {
+          
+          expect(res.body.reviews).toBeInstanceOf(Array);
+          expect(res.body.reviews.length).toBeGreaterThan(0);
+          res.body.reviews.forEach((review) => {
+            expect(review.category).toEqual('dexterity')
+            expect(review).toMatchObject({
+                title: expect.any(String),
+                designer: expect.any(String),
+                owner: expect.any(String),
+                review_body: expect.any(String),
+                created_at: expect.any(String),
+                votes: expect.any(Number),
+                comment_count: expect.any(Number)
+              })
+          });
+          expect(res.body.reviews).toBeSortedBy('created_at', {
+            descending: true
+          });
+        });
+    });
+
+    test('200 - responds with an array of reviews objects of one category', () => {
+      return request(app)
+        .get('/api/reviews?sort_by=owner')
         .expect(200)
         .then((res) => {
           
@@ -114,7 +140,7 @@ describe('GET/api/reviews', () => {
                 comment_count: expect.any(Number)
               })
           });
-          expect(res.body.reviews).toBeSortedBy('title', {
+          expect(res.body.reviews).toBeSortedBy('owner', {
             descending: true
           });
         });
@@ -134,6 +160,15 @@ describe('GET/api/reviews', () => {
         .expect(400)
         .then((res) => {
           expect(res.body.msg).toEqual('category lalala does not exists');
+        });
+    });
+
+    test('400 - Bad request when pass invalid order query', () => {
+      return request(app)
+        .get('/api/reviews?order=x')
+        .expect(400)
+        .then((res) => {
+          expect(res.body.msg).toEqual('invalid order query');
         });
     });
 
