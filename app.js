@@ -5,9 +5,8 @@ const { getCategories, getReviews,
 getReviewById, postComment , getCommentsByReviewId, updateReview,
  getUsers, deleteCommentById, getApi } = require('./controllers/games');
 
-
-app.use(cors());
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 app.get('/api', getApi)
