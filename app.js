@@ -1,10 +1,12 @@
 const express = require('express');
+const cors = require('cors');
 
 const { getCategories, getReviews,
 getReviewById, postComment , getCommentsByReviewId, updateReview,
  getUsers, deleteCommentById, getApi } = require('./controllers/games');
 
 
+app.use(cors());
 const app = express();
 app.use(express.json());
 
